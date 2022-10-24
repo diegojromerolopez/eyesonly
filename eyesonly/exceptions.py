@@ -1,0 +1,2 @@
+class EyesOnlyException(Exception):
+    pass
