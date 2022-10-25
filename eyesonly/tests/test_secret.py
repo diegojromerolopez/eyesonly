@@ -18,6 +18,18 @@ class TestSecret(unittest.TestCase):
 
         self.assertEqual('Secret api_key is not allowed to be seen here', str(exc_context.exception))
 
+    def test_secret_not_allowed_exception_denied_policy(self):
+        secret = Secret(name='api_key', value='SECRET_API_KEY', denied_policy='exception')
+        with self.assertRaises(EyesOnlyException) as exc_context:
+            str(secret)
+
+        self.assertEqual('Secret api_key is not allowed to be seen here', str(exc_context.exception))
+
+    def test_secret_not_allowed_censure_denied_policy(self):
+        secret = Secret(name='api_key', value='SECRET_API_KEY', denied_policy='censure')
+
+        self.assertEqual('*****', str(secret))
+
     def test_secret_allowed(self):
         Secret.load_allowed_uses(
             {os.path.join(self.root_path, 'test_secret.py'): 'test_secret_allowed'}
