@@ -1,4 +1,5 @@
 import os
+import time
 import unittest
 
 from eyesonly.exceptions import EyesOnlyException
@@ -26,3 +27,28 @@ class TestSecret(unittest.TestCase):
         value = str(secret)
 
         self.assertEqual('SECRET_API_KEY', value)
+
+    def test_secret_performance(self):
+        Secret.load_allowed_uses(
+            {os.path.join(self.root_path, 'test_secret.py'): 'test_secret_performance'}
+        )
+
+        secret = Secret(name='api_key', value='SECRET_API_KEY')
+
+        dict_access_start_time = time.time()
+        _ = os.environ['HOME']
+        dict_access_time = time.time() - dict_access_start_time
+
+        str_method_start_time = time.time()
+        value2 = secret.str(__file__, __name__)
+        str_method_time = time.time() - str_method_start_time
+
+        str_cast_start_time = time.time()
+        value3 = str(secret)
+        str_cast_time = time.time() - str_cast_start_time
+
+        self.assertEqual('SECRET_API_KEY', value2)
+        self.assertEqual('SECRET_API_KEY', value3)
+        self.assertLess(str_method_time, dict_access_time)
+        self.assertLess(str_method_time, str_cast_time)
+        self.assertLess(dict_access_time, str_cast_time)
