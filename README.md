@@ -3,6 +3,8 @@ A package to avoid having leaks of secrets.
 
 A proof-of concept of a way of hiding secrets by limiting the places they can be called.
 
+IMPORTANT NOTICE: **This code is in pre-alpha stage. I am not responsible for any damage you suffer because of your use of this project.**
+
 ## Use
 ```python
 from eyesonly.secret import Secret
