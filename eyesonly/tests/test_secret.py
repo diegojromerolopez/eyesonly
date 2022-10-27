@@ -10,6 +10,9 @@ class TestSecret(unittest.TestCase):
     def setUp(self) -> None:
         self.root_path = os.path.dirname(os.path.abspath(__file__))
         Secret.clear_allowed_uses()
+        Secret.load_allowed_uses(
+            {os.path.join(self.root_path, 'test_secret.py'): {'test_secret_allowed', 'test_secret_performance'}}
+        )
 
     def test_secret_not_allowed(self):
         secret = Secret(name='api_key', value='SECRET_API_KEY')
@@ -31,20 +34,12 @@ class TestSecret(unittest.TestCase):
         self.assertEqual('*****', str(secret))
 
     def test_secret_allowed(self):
-        Secret.load_allowed_uses(
-            {os.path.join(self.root_path, 'test_secret.py'): 'test_secret_allowed'}
-        )
-
         secret = Secret(name='api_key', value='SECRET_API_KEY')
         value = str(secret)
 
         self.assertEqual('SECRET_API_KEY', value)
 
     def test_secret_performance(self):
-        Secret.load_allowed_uses(
-            {os.path.join(self.root_path, 'test_secret.py'): 'test_secret_performance'}
-        )
-
         secret = Secret(name='api_key', value='SECRET_API_KEY')
 
         dict_access_start_time = time.time()
@@ -52,7 +47,7 @@ class TestSecret(unittest.TestCase):
         dict_access_time = time.time() - dict_access_start_time
 
         str_method_start_time = time.time()
-        value2 = secret.str(__file__, __name__)
+        value2 = secret.str(__file__, 'test_secret_performance')
         str_method_time = time.time() - str_method_start_time
 
         str_cast_start_time = time.time()

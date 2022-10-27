@@ -33,7 +33,8 @@ class Secret:
         return self.__denied_policy()
 
     def str(self, file_path: str, function: str):
-        if function in self._ALLOWED_USES.get(file_path, set()):
+        file_allowed_uses: Set[str] = self._ALLOWED_USES.get(file_path, set())
+        if function in file_allowed_uses:
             return self.__value
 
         return self.__denied_policy()
