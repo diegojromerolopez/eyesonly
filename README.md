@@ -15,16 +15,26 @@ Secret.load_allowed_uses(
         )
 ```
 
-Use **@eyesonly** decorator for performance:
+Use the allowed function or a function called by allowed function:
 ```python
 from eyesonly.secret import Secret
-from eyesonly.decorators import eyesonly
 
-@eyesonly
-def allowed_func1(self):
+def allowed_func1():
     secret = Secret(name='api_key', value='SECRET_API_KEY')
 
     # Secret can be seen in this function 
     value = str(secret)
     assert 'SECRET_API_KEY' == value
+
+
+def allowed_func2():
+    secret = Secret(name='api_key', value='SECRET_API_KEY')
+
+    # Secret can be seen in this function 
+    return str(secret)
+    
+
+def another_func(self):
+    # Secret can be seen in this function 
+    assert 'SECRET_API_KEY' == allowed_func2()
 ```
