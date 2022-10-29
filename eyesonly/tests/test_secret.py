@@ -62,7 +62,6 @@ class TestSecret(unittest.TestCase):
 
         self.assertEqual('SECRET_API_KEY', inner_function_in_test())
 
-
     def test_secret_performance(self):
         secret = Secret(name='api_key', value='SECRET_API_KEY')
 
