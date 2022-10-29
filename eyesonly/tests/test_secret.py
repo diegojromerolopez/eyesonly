@@ -11,7 +11,13 @@ class TestSecret(unittest.TestCase):
         self.root_path = os.path.dirname(os.path.abspath(__file__))
         Secret.clear_allowed_uses()
         Secret.load_allowed_uses(
-            {os.path.join(self.root_path, 'test_secret.py'): {'test_secret_allowed', 'test_secret_performance'}}
+            {
+                os.path.join(self.root_path, 'test_secret.py'): {
+                    'test_secret_allowed',
+                    'test_secret_performance',
+                    'test_allowed_in_inner_function'
+                }
+            }
         )
 
     def test_secret_not_allowed(self):
@@ -38,6 +44,14 @@ class TestSecret(unittest.TestCase):
         value = str(secret)
 
         self.assertEqual('SECRET_API_KEY', value)
+
+    def test_allowed_in_inner_function(self):
+        def inner_function():
+            secret = Secret(name='api_key', value='SECRET_API_KEY')
+
+            return str(secret)
+
+        self.assertEqual('SECRET_API_KEY', inner_function())
 
     def test_secret_performance(self):
         secret = Secret(name='api_key', value='SECRET_API_KEY')
