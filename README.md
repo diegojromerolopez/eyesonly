@@ -11,12 +11,13 @@ from eyesonly.secret import Secret
 
 # Initialize where the secrets can be used
 Secret.load_allowed_uses(
-            {'/whatever/path/you/like/allowed_file1.py': {'allowed_func1', 'allowed_func2'}}
+            {'/whatever/path/you/like/allowed_file1.py': {'allowed_func1', 'another_func'}}
         )
 ```
 
 Use the allowed function or a function called by allowed function:
 ```python
+# This file is '/whatever/path/you/like/allowed_file1.py'
 from eyesonly.secret import Secret
 
 def allowed_func1():
