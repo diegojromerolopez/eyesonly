@@ -15,7 +15,8 @@ class TestSecret(unittest.TestCase):
                 os.path.join(self.root_path, 'test_secret.py'): {
                     'test_secret_allowed',
                     'test_secret_performance',
-                    'test_allowed_in_inner_function'
+                    'test_allowed_in_inner_function_with_allowed_caller_function',
+                    'inner_function_in_test'
                 }
             }
         )
@@ -45,13 +46,22 @@ class TestSecret(unittest.TestCase):
 
         self.assertEqual('SECRET_API_KEY', value)
 
-    def test_allowed_in_inner_function(self):
+    def test_allowed_in_inner_function_with_allowed_caller_function(self):
         def inner_function():
             secret = Secret(name='api_key', value='SECRET_API_KEY')
 
             return str(secret)
 
         self.assertEqual('SECRET_API_KEY', inner_function())
+
+    def test_allowed_in_inner_function_with_not_allowed_caller_function(self):
+        def inner_function_in_test():
+            secret = Secret(name='api_key', value='SECRET_API_KEY')
+
+            return str(secret)
+
+        self.assertEqual('SECRET_API_KEY', inner_function_in_test())
+
 
     def test_secret_performance(self):
         secret = Secret(name='api_key', value='SECRET_API_KEY')
