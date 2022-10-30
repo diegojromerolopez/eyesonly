@@ -4,8 +4,8 @@
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/diegojromerolopez/eyesonly/graphs/commit-activity)
 [![made-with-python](https://img.shields.io/badge/Made%20with-Python-1f425f.svg)](https://www.python.org/)
-[![Maintainability](https://api.codeclimate.com/v1/badges/aba99dc71aec83ee8787/maintainability)](https://codeclimate.com/github/diegojromerolopez/eyesonly/maintainability)
-[![Test Coverage](https://api.codeclimate.com/v1/badges/aba99dc71aec83ee8787/test_coverage)](https://codeclimate.com/github/diegojromerolopez/eyesonly/test_coverage)
+[![Maintainability](https://api.codeclimate.com/v1/badges/d665c0a34d0648213dd4/maintainability)](https://codeclimate.com/github/diegojromerolopez/eyesonly/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/d665c0a34d0648213dd4/test_coverage)](https://codeclimate.com/github/diegojromerolopez/eyesonly/test_coverage)
 
 A package to avoid having leaks of secrets.
 
