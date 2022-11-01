@@ -1,40 +1,42 @@
 import inspect
-from typing import Set, Dict, Callable
+from typing import Set, Callable, Optional
 
+from eyesonly.acl.acl import ACL
 from eyesonly.exceptions import EyesOnlyException
 
 
 class Secret:
     CENSORED_VALUE_REPLACEMENT = '*****'
 
-    _ALLOWED_USES = {
-    }
+    _ACL: Optional[ACL] = None
 
     @classmethod
     def clear_allowed_uses(cls):
-        cls._ALLOWED_USES = {}
+        cls._ACL = None
 
     @classmethod
-    def load_allowed_uses(cls, uses: Dict[str, Set[str]]):
-        cls._ALLOWED_USES = uses
+    def load_allowed_uses(cls, acl: ACL):
+        cls._ACL = acl
 
     def __init__(self, name: str, value: str, denied_policy: str = 'exception'):
         self.__name = name
         self.__value = value
         self.__denied_policy: Callable = self.__build_denied_policy(policy=denied_policy)
 
+    def __allowed(self, file_path: str, function: str) -> bool:
+        return self._ACL.allowed(secret=self.__name, file_path=file_path, function=function)
+
     def __str__(self):
         curr_frame = inspect.currentframe()
         finfos = inspect.getouterframes(curr_frame)
         for frame_info in finfos[1:]:
-            if frame_info.function in self._ALLOWED_USES.get(frame_info.filename, set()):
+            if self.__allowed(function=frame_info.function, file_path=frame_info.filename):
                 return self.__value
 
         return self.__denied_policy()
 
     def str(self, file_path: str, function: str):
-        file_allowed_uses: Set[str] = self._ALLOWED_USES.get(file_path, set())
-        if function in file_allowed_uses:
+        if self.__allowed(function=function, file_path=file_path):
             return self.__value
 
         return self.__denied_policy()

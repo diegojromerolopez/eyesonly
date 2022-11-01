@@ -1,7 +1,12 @@
+import json
 import os
+import shutil
+import tempfile
 import time
 import unittest
 
+from eyesonly.acl.acl import ACL
+from eyesonly.acl.providers.json_acl_provider import JSONACLProvider
 from eyesonly.exceptions import EyesOnlyException
 from eyesonly.secret import Secret
 
@@ -10,16 +15,37 @@ class TestSecret(unittest.TestCase):
     def setUp(self) -> None:
         self.root_path = os.path.dirname(os.path.abspath(__file__))
         Secret.clear_allowed_uses()
-        Secret.load_allowed_uses(
-            {
-                os.path.join(self.root_path, 'test_secret.py'): {
-                    'test_secret_allowed',
-                    'test_secret_performance',
-                    'test_allowed_in_inner_function_with_allowed_caller_function',
-                    'inner_function_in_test'
-                }
+
+        acl_config = {
+            "eyesonly": {
+                "secrets": [
+                    {
+                        "secret": "api_key",
+                        "files": [
+                            {
+                                "file_path": os.path.join(self.root_path, 'test_secret.py'),
+                                "functions": [
+                                    'test_secret_allowed',
+                                    'test_secret_performance',
+                                    'test_allowed_in_inner_function_with_allowed_caller_function',
+                                    'inner_function_in_test'
+                                ]
+                            }
+                        ]
+                    }
+                ]
             }
-        )
+        }
+        self.temp_dir = tempfile.mkdtemp()
+        self.temp_config_file_path = os.path.join(self.temp_dir, 'acl_config.json')
+        with open(self.temp_config_file_path, "w") as outfile:
+            json.dump(acl_config, outfile)
+
+        acl = ACL(JSONACLProvider(file_path=self.temp_config_file_path))
+        Secret.load_allowed_uses(acl=acl)
+
+    def tearDown(self) -> None:
+        shutil.rmtree(self.temp_dir)
 
     def test_secret_not_allowed(self):
         secret = Secret(name='api_key', value='SECRET_API_KEY')
@@ -79,6 +105,5 @@ class TestSecret(unittest.TestCase):
 
         self.assertEqual('SECRET_API_KEY', value2)
         self.assertEqual('SECRET_API_KEY', value3)
-        self.assertLess(str_method_time, dict_access_time)
-        self.assertLess(str_method_time, str_cast_time)
-        self.assertLess(dict_access_time, str_cast_time)
+        self.assertAlmostEqual(dict_access_time, str_method_time, delta=10e-5)
+        self.assertAlmostEqual(str_cast_time, str_method_time, delta=10e-2)
