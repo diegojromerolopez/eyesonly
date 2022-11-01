@@ -92,13 +92,11 @@ from eyesonly.acl.acl import ACL
 from eyesonly.acl.providers.json_acl_provider import JSONACLProvider
 from eyesonly.acl.providers.toml_acl_provider import TomlACLProvider
 
-# Using a JSON configuration file
+# JSON configuration file
 json_acl = ACL(JSONACLProvider(file_path='path/of/your/json/config/file'))
-Secret.assign_acl(acl=json_acl)
 
-# Using a toml configuration file
+# toml configuration file
 toml_acl = ACL(TomlACLProvider(file_path='path/of/your/toml/config/file'))
-Secret.assign_acl(acl=toml_acl)
 ```
 
 ### Declare your secrets
@@ -111,9 +109,12 @@ could read be used to declare your secrets (usually by reading their value from 
 import os
 from eyesonly.secret import Secret
 
-GEO_API_SECRET = Secret(name='api_key', value=os.environ['GEO_SERVICE_API_KEY'])
-DB_PASSWORD = Secret(name='postgresql_password', value=os.environ['DB_PASSWORD'])
+GEO_API_SECRET = Secret(name='api_key', value=os.environ['GEO_SERVICE_API_KEY'], acl=json_acl)
+DB_PASSWORD = Secret(name='postgresql_password', value=os.environ['DB_PASSWORD'], acl=json_acl)
 ```
+
+Each Secret needs its own ACL, so you will have to pass it as parameter, as seen above in the
+examples.
 
 ### Use your secrets in your code
 ```python
