@@ -17,9 +17,15 @@ class TestJSONACLProvider(unittest.TestCase):
                          str(exc_context.exception))
 
     def test_load(self):
-        expected_acl = {'secret1': {'../../path/to/secret11.py': {'func1b', 'func1a'},
-                                    '../../path/to/secret12.py': {'func2b', 'func2a'}},
-                        'secret2': {'/root/path/to/secret2.py': {'func4', 'func3'}}}
+        expected_acl = {
+            'secret1': {
+                os.path.join(self.resources_path, '../../path/to/secret11.py'): {'func1b', 'func1a'},
+                os.path.join(self.resources_path, '../../path/to/secret12.py'): {'func2b', 'func2a'}
+            },
+            'secret2': {
+                '/root/path/to/secret2.py': {'func4', 'func3'}
+            }
+        }
 
         acl_provider = JSONACLProvider(file_path=os.path.join(self.resources_path, 'eyesonly.json'))
         acl = acl_provider.load()
