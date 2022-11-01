@@ -14,7 +14,7 @@ from eyesonly.secret import Secret
 class TestSecret(unittest.TestCase):
     def setUp(self) -> None:
         self.root_path = os.path.dirname(os.path.abspath(__file__))
-        Secret.clear_allowed_uses()
+        Secret.clear_acl()
 
         acl_config = {
             "eyesonly": {
@@ -42,7 +42,7 @@ class TestSecret(unittest.TestCase):
             json.dump(acl_config, outfile)
 
         acl = ACL(JSONACLProvider(file_path=self.temp_config_file_path))
-        Secret.load_allowed_uses(acl=acl)
+        Secret.assign_acl(acl=acl)
 
     def tearDown(self) -> None:
         shutil.rmtree(self.temp_dir)

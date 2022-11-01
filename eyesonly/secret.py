@@ -1,5 +1,5 @@
 import inspect
-from typing import Set, Callable, Optional
+from typing import Callable, Optional
 
 from eyesonly.acl.acl import ACL
 from eyesonly.exceptions import EyesOnlyException
@@ -11,11 +11,11 @@ class Secret:
     _ACL: Optional[ACL] = None
 
     @classmethod
-    def clear_allowed_uses(cls):
+    def clear_acl(cls):
         cls._ACL = None
 
     @classmethod
-    def load_allowed_uses(cls, acl: ACL):
+    def assign_acl(cls, acl: ACL):
         cls._ACL = acl
 
     def __init__(self, name: str, value: str, denied_policy: str = 'exception'):
@@ -41,7 +41,7 @@ class Secret:
 
         return self.__denied_policy()
 
-    def __build_denied_policy(self, policy: str):
+    def __build_denied_policy(self, policy: str) -> Callable:
         return getattr(self, f'_Secret__denied_policy_{policy}')
 
     def __denied_policy_exception(self):

@@ -14,36 +14,126 @@ A proof-of concept of a way of hiding secrets by limiting the places they can be
 IMPORTANT NOTICE: **This code is in pre-alpha stage. I am not responsible for any damage you suffer because of your use of this project.**
 
 ## Use
-```python
-from eyesonly.secret import Secret
 
-# Initialize where the secrets can be used
-Secret.load_allowed_uses(
-            {'/whatever/path/you/like/allowed_file1.py': {'allowed_func1', 'another_func'}}
-        )
+### Create a configuration file
+
+You have to create a configuration file that specifies which secrets can be accessed from which files
+and functions. This is what we call access-control-list (or ACL for short).
+
+There are two types of configuration files that you can create: JSON and toml.
+
+#### JSON configuration file
+```json
+{
+  "eyesonly":{
+    "secrets": [
+      {
+        "secret": "secret1",
+        "files": [
+          {
+            "file_path": "../../path/to/secret11.py",
+            "functions": [
+              "func1b",
+              "func1a"
+            ]
+          },
+          {
+            "file_path": "../../path/to/secret12.py",
+            "functions": ["func2b", "func2a"]
+          }
+        ]
+      },
+      {
+        "secret": "secret2",
+        "files": [
+          {
+            "file_path": "/root/path/to/secret2.py",
+            "functions": ["func4", "func3"]
+          }
+        ]
+      }
+    ]
+  }
+}
 ```
 
-Use the allowed function or a function called by allowed function:
+#### Toml configuration file
+```toml
+[eyesonly]
+[[eyesonly.secrets]]
+secret = 'secret1'
+[[eyesonly.secrets.files]]
+file_path = '../../path/to/secret11.py'
+functions = [
+    'func1a',
+    'func1b'
+]
+[[eyesonly.secrets.files]]
+file_path = '../../path/to/secret12.py'
+functions = [
+    'func2a',
+    'func2b'
+]
+
+[[eyesonly.secrets]]
+secret = 'secret2'
+[[eyesonly.secrets.files]]
+file_path = '/root/path/to/secret2.py'
+functions =[
+    'func3',
+    'func4'
+]
+```
+
+### Load your configuration file and assign the ACL to your secrets
 ```python
-# This file is '/whatever/path/you/like/allowed_file1.py'
+from eyesonly.secret import Secret
+from eyesonly.acl.acl import ACL
+from eyesonly.acl.providers.json_acl_provider import JSONACLProvider
+from eyesonly.acl.providers.toml_acl_provider import TomlACLProvider
+
+# Using a JSON configuration file
+json_acl = ACL(JSONACLProvider(file_path='path/of/your/json/config/file'))
+Secret.assign_acl(acl=json_acl)
+
+# Using a toml configuration file
+toml_acl = ACL(TomlACLProvider(file_path='path/of/your/toml/config/file'))
+Secret.assign_acl(acl=toml_acl)
+```
+
+### Declare your secrets
+
+Declare your secrets in some __init__.py or other file in your project that
+could read be used to declare your secrets (usually by reading their value from environment)
+
+```python
+# secret_depository.py
+import os
 from eyesonly.secret import Secret
 
-def allowed_func1():
-    secret = Secret(name='api_key', value='SECRET_API_KEY')
+GEO_API_SECRET = Secret(name='api_key', value=os.environ['GEO_SERVICE_API_KEY'])
+DB_PASSWORD = Secret(name='postgresql_password', value=os.environ['DB_PASSWORD'])
+```
 
+### Use your secrets in your code
+```python
+from .secret_depository import GEO_API_SECRET
+from eyesonly.secret import Secret
+
+assert GEO_API_SECRET.__class__ == Secret
+
+def allowed_func1():
     # Secret can be seen in this function 
-    value = str(secret)
+    value = str(GEO_API_SECRET)
     assert 'SECRET_API_KEY' == value
 
 
 def allowed_func2():
-    secret = Secret(name='api_key', value='SECRET_API_KEY')
-
     # Secret can be seen in this function 
-    return str(secret)
+    return str(GEO_API_SECRET)
     
 
-def another_func(self):
+def another_func():
     # Secret can be seen in this function 
     assert 'SECRET_API_KEY' == allowed_func2()
 ```
