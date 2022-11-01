@@ -1,95 +1,80 @@
-import json
 import os
-import shutil
-import tempfile
 import time
 import unittest
 
 from eyesonly.acl.acl import ACL
 from eyesonly.acl.providers.json_acl_provider import JSONACLProvider
+from eyesonly.acl.providers.toml_acl_provider import TomlACLProvider
 from eyesonly.exceptions import EyesOnlyException
 from eyesonly.secret import Secret
 
 
 class TestSecret(unittest.TestCase):
     def setUp(self) -> None:
-        self.root_path = os.path.dirname(os.path.abspath(__file__))
-        Secret.clear_acl()
+        root_path = os.path.dirname(os.path.abspath(__file__))
+        resources_path = os.path.join(root_path, '_resources')
 
-        acl_config = {
-            "eyesonly": {
-                "secrets": [
-                    {
-                        "secret": "api_key",
-                        "files": [
-                            {
-                                "file_path": os.path.join(self.root_path, 'test_secret.py'),
-                                "functions": [
-                                    'test_secret_allowed',
-                                    'test_secret_performance',
-                                    'test_allowed_in_inner_function_with_allowed_caller_function',
-                                    'inner_function_in_test'
-                                ]
-                            }
-                        ]
-                    }
-                ]
-            }
-        }
-        self.temp_dir = tempfile.mkdtemp()
-        self.temp_config_file_path = os.path.join(self.temp_dir, 'acl_config.json')
-        with open(self.temp_config_file_path, "w") as outfile:
-            json.dump(acl_config, outfile)
+        json_config_file_path = os.path.join(resources_path, 'eyesonly.json')
+        toml_config_file_path = os.path.join(resources_path, 'eyesonly.toml')
 
-        acl = ACL(JSONACLProvider(file_path=self.temp_config_file_path))
-        Secret.assign_acl(acl=acl)
+        self.json_acl = ACL(JSONACLProvider(file_path=json_config_file_path))
+        self.toml_acl = ACL(TomlACLProvider(file_path=toml_config_file_path))
 
-    def tearDown(self) -> None:
-        shutil.rmtree(self.temp_dir)
-
-    def test_secret_not_allowed(self):
-        secret = Secret(name='api_key', value='SECRET_API_KEY')
+    def test_missing_secret(self):
+        secret = Secret(name='missing_secret', value='SECRET_API_KEY', acl=self.json_acl)
         with self.assertRaises(EyesOnlyException) as exc_context:
             str(secret)
 
-        self.assertEqual('Secret api_key is not allowed to be seen here', str(exc_context.exception))
+        self.assertEqual('Secret missing_secret is not allowed to be seen here',
+                         str(exc_context.exception))
 
-    def test_secret_not_allowed_exception_denied_policy(self):
-        secret = Secret(name='api_key', value='SECRET_API_KEY', denied_policy='exception')
+    def test_json_config_secret_not_allowed(self):
+        secret = Secret(name='secret_not_allowed_anywhere', value='SECRET_API_KEY', acl=self.json_acl)
         with self.assertRaises(EyesOnlyException) as exc_context:
             str(secret)
 
-        self.assertEqual('Secret api_key is not allowed to be seen here', str(exc_context.exception))
+        self.assertEqual('Secret secret_not_allowed_anywhere is not allowed to be seen here',
+                         str(exc_context.exception))
 
-    def test_secret_not_allowed_censure_denied_policy(self):
-        secret = Secret(name='api_key', value='SECRET_API_KEY', denied_policy='censure')
+    def test_json_config_secret_not_allowed_exception_denied_policy(self):
+        secret = Secret(name='secret_not_allowed_anywhere', value='SECRET_API_KEY', acl=self.json_acl,
+                        denied_policy='exception')
+        with self.assertRaises(EyesOnlyException) as exc_context:
+            str(secret)
+
+        self.assertEqual('Secret secret_not_allowed_anywhere is not allowed to be seen here',
+                         str(exc_context.exception))
+
+    def test_json_config_secret_not_allowed_censure_denied_policy(self):
+        secret = Secret(name='secret_not_allowed_anywhere', value='SECRET_API_KEY', acl=self.json_acl,
+                        denied_policy='censure')
 
         self.assertEqual('*****', str(secret))
 
-    def test_secret_allowed(self):
-        secret = Secret(name='api_key', value='SECRET_API_KEY')
+    def test_json_config_secret_allowed(self):
+        secret = Secret(name='secret_allowed', acl=self.json_acl, value='SECRET_API_KEY')
         value = str(secret)
 
         self.assertEqual('SECRET_API_KEY', value)
 
-    def test_allowed_in_inner_function_with_allowed_caller_function(self):
+    def test_json_config_allowed_in_inner_function_with_allowed_caller_function(self):
         def inner_function():
-            secret = Secret(name='api_key', value='SECRET_API_KEY')
+            secret = Secret(name='secret_allowed', acl=self.json_acl, value='SECRET_API_KEY')
 
             return str(secret)
 
         self.assertEqual('SECRET_API_KEY', inner_function())
 
-    def test_allowed_in_inner_function_with_not_allowed_caller_function(self):
+    def test_json_config_allowed_in_inner_function_with_not_allowed_caller_function(self):
         def inner_function_in_test():
-            secret = Secret(name='api_key', value='SECRET_API_KEY')
+            secret = Secret(name='secret_allowed', acl=self.json_acl, value='SECRET_API_KEY')
 
             return str(secret)
 
         self.assertEqual('SECRET_API_KEY', inner_function_in_test())
 
     def test_secret_performance(self):
-        secret = Secret(name='api_key', value='SECRET_API_KEY')
+        secret = Secret(name='secret_allowed', acl=self.json_acl, value='SECRET_API_KEY')
 
         dict_access_start_time = time.time()
         _ = os.environ['HOME']
@@ -107,3 +92,17 @@ class TestSecret(unittest.TestCase):
         self.assertEqual('SECRET_API_KEY', value3)
         self.assertAlmostEqual(dict_access_time, str_method_time, delta=10e-5)
         self.assertAlmostEqual(str_cast_time, str_method_time, delta=10e-2)
+
+    def test_toml_config_secret_not_allowed(self):
+        secret = Secret(name='secret_not_allowed_anywhere', value='SECRET_API_KEY', acl=self.toml_acl)
+        with self.assertRaises(EyesOnlyException) as exc_context:
+            str(secret)
+
+        self.assertEqual('Secret secret_not_allowed_anywhere is not allowed to be seen here',
+                         str(exc_context.exception))
+
+    def test_toml_config_secret_allowed(self):
+        secret = Secret(name='secret_allowed', acl=self.toml_acl, value='SECRET_API_KEY')
+        value = str(secret)
+
+        self.assertEqual('SECRET_API_KEY', value)

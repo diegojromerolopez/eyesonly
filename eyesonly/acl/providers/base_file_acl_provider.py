@@ -24,7 +24,9 @@ class BaseACLProvider:
             secret: str = secret_attrs['secret']
             acl[secret] = {}
             for file_attrs in secret_attrs['files']:
-                file_path: str = os.path.join(self._config_dir_path, file_attrs['file_path'])
+                file_path: str = os.path.realpath(
+                    os.path.join(self._config_dir_path, file_attrs['file_path'])
+                )
                 functions: List[str] = file_attrs['functions']
                 acl[secret][file_path] = set(functions)
         return acl

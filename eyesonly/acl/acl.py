@@ -11,4 +11,4 @@ class ACL:
         self.__acl: ACLType = provider.load()
 
     def allowed(self, secret: str, file_path: str, function: str):
-        return function in self.__acl.get(secret, set()).get(file_path, set())
+        return function in self.__acl.get(secret, {}).get(file_path, set())

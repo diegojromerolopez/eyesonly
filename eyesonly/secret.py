@@ -8,23 +8,14 @@ from eyesonly.exceptions import EyesOnlyException
 class Secret:
     CENSORED_VALUE_REPLACEMENT = '*****'
 
-    _ACL: Optional[ACL] = None
-
-    @classmethod
-    def clear_acl(cls):
-        cls._ACL = None
-
-    @classmethod
-    def assign_acl(cls, acl: ACL):
-        cls._ACL = acl
-
-    def __init__(self, name: str, value: str, denied_policy: str = 'exception'):
+    def __init__(self, name: str, value: str, acl: ACL, denied_policy: str = 'exception'):
         self.__name = name
         self.__value = value
+        self.__acl = acl
         self.__denied_policy: Callable = self.__build_denied_policy(policy=denied_policy)
 
     def __allowed(self, file_path: str, function: str) -> bool:
-        return self._ACL.allowed(secret=self.__name, file_path=file_path, function=function)
+        return self.__acl.allowed(secret=self.__name, file_path=file_path, function=function)
 
     def __str__(self):
         curr_frame = inspect.currentframe()
