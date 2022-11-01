@@ -19,8 +19,8 @@ class TestJSONACLProvider(unittest.TestCase):
     def test_load(self):
         expected_acl = {
             'secret1': {
-                os.path.join(self.resources_path, '../../path/to/secret11.py'): {'func1b', 'func1a'},
-                os.path.join(self.resources_path, '../../path/to/secret12.py'): {'func2b', 'func2a'}
+                os.path.realpath(os.path.join(self.resources_path, '../../path/to/secret11.py')): {'func1b', 'func1a'},
+                os.path.realpath(os.path.join(self.resources_path, '../../path/to/secret12.py')): {'func2b', 'func2a'}
             },
             'secret2': {
                 '/root/path/to/secret2.py': {'func4', 'func3'}
