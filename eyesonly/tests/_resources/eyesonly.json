@@ -1,0 +1,32 @@
+{
+  "eyesonly": {
+    "secrets": [
+      {
+        "secret": "secret_not_allowed_anywhere",
+        "files": [
+          {
+            "file_path": "../test_secret.py",
+            "functions": [
+              "this_function_does_not_exist"
+            ]
+          }
+        ]
+      },
+      {
+        "secret": "secret_allowed",
+        "files": [
+          {
+            "file_path": "../test_secret.py",
+            "functions": [
+              "test_json_config_secret_allowed",
+              "test_json_config_allowed_in_inner_function_with_allowed_caller_function",
+              "inner_function",
+              "inner_function_in_test",
+              "test_secret_performance"
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

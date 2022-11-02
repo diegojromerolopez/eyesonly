@@ -1,0 +1,31 @@
+{
+  "eyesonly": {
+    "secrets": [
+      {
+        "secret": "secret1",
+        "files": [
+          {
+            "file_path": "../../path/to/secret11.py",
+            "functions": [
+              "func1b",
+              "func1a"
+            ]
+          },
+          {
+            "file_path": "../../path/to/secret12.py",
+            "functions": ["func2b", "func2a"]
+          }
+        ]
+      },
+      {
+        "secret": "secret2",
+        "files": [
+          {
+            "file_path": "/root/path/to/secret2.py",
+            "functions": ["func4", "func3"]
+          }
+        ]
+      }
+    ]
+  }
+}
