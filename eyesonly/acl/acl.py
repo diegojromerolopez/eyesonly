@@ -1,12 +1,13 @@
 from typing import Union
 
 from eyesonly.acl.acl_type import ACLType
+from eyesonly.acl.providers.env_acl_provider import EnvACLProvider
 from eyesonly.acl.providers.json_acl_provider import JSONACLProvider
 from eyesonly.acl.providers.toml_acl_provider import TomlACLProvider
 
 
 class ACL:
-    def __init__(self, provider: Union[JSONACLProvider, TomlACLProvider]):
+    def __init__(self, provider: Union[JSONACLProvider, TomlACLProvider, EnvACLProvider]):
         self.__provider = provider
         self.__acl: ACLType = provider.load()
 

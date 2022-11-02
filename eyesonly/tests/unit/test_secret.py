@@ -1,8 +1,10 @@
+import json
 import os
 import time
 import unittest
 
 from eyesonly.acl.acl import ACL
+from eyesonly.acl.providers.env_acl_provider import EnvACLProvider
 from eyesonly.acl.providers.json_acl_provider import JSONACLProvider
 from eyesonly.acl.providers.toml_acl_provider import TomlACLProvider
 from eyesonly.exceptions import EyesOnlyException
@@ -17,7 +19,40 @@ class TestSecret(unittest.TestCase):
         json_config_file_path = os.path.join(resources_path, 'eyesonly.json')
         toml_config_file_path = os.path.join(resources_path, 'eyesonly.toml')
 
+        os.environ['test_acl'] = json.dumps({
+            "eyesonly": {
+                "secrets": [
+                    {
+                        "secret": "secret1",
+                        "files": [
+                            {
+                                "file_path": "../../path/to/secret11.py",
+                                "functions": [
+                                    "func1b",
+                                    "func1a"
+                                ]
+                            },
+                            {
+                                "file_path": "../../path/to/secret12.py",
+                                "functions": ["func2b", "func2a"]
+                            }
+                        ]
+                    },
+                    {
+                        "secret": "secret2",
+                        "files": [
+                            {
+                                "file_path": "/root/path/to/secret2.py",
+                                "functions": ["func4", "func3"]
+                            }
+                        ]
+                    }
+                ]
+            }
+        })
+
         self.json_acl = ACL(JSONACLProvider(file_path=json_config_file_path))
+        self.env_acl = ACL(EnvACLProvider(env_variable='test_acl'))
         self.toml_acl = ACL(TomlACLProvider(file_path=toml_config_file_path))
 
     def test_missing_secret(self):

@@ -2,9 +2,10 @@ import os
 from typing import BinaryIO, List
 
 from eyesonly.acl.acl_type import ACLType
+from eyesonly.acl.providers.base_acl_provider import BaseACLProvider
 
 
-class BaseACLProvider:
+class BaseFileACLProvider(BaseACLProvider):
     def __init__(self, file_path: str):
         if not os.path.isfile(file_path):
             raise ValueError(f'File {file_path} is not a valid file path')
