@@ -5,7 +5,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Integration tests
-          run: |
-            cd ./eyesonly/tests/integration
-            make run
+        run: |
+          cd ./eyesonly/tests/integration
+          make run
 
