@@ -163,3 +163,7 @@ def postgresql_password_not_allowed():
     # in the Secret initializer.
     assert '*****' == str(DB_PASSWORD)
 ```
+
+## License
+
+[MIT](LICENSE), readme image is authored by me, and it is placed in the public domain.
