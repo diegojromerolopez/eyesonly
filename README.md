@@ -11,6 +11,10 @@
 [![Maintainability](https://api.codeclimate.com/v1/badges/d665c0a34d0648213dd4/maintainability)](https://codeclimate.com/github/diegojromerolopez/eyesonly/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/d665c0a34d0648213dd4/test_coverage)](https://codeclimate.com/github/diegojromerolopez/eyesonly/test_coverage)
 
+<p align="center">
+  <img src="https://github.com/diegojromerolopez/eyesonly/blob/master/resources/logo.png?raw=true" alt="EyesOnly Logo"/>
+</p>
+
 A package to avoid having leaks of secrets.
 
 A way of hiding secrets by limiting the places they can be called.
