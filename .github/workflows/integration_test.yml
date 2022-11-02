@@ -1,0 +1,11 @@
+name: Integration Test Workflow
+on: [push]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Integration tests
+          run: |
+            cd ./eyesonly/tests/integration
+            make run
+

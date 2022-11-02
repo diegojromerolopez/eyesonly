@@ -1,0 +1,14 @@
+version: "3.9"
+
+services:
+  eyesonly_test:
+    container_name: eyesonly_test
+    hostname: eyesonly_test
+    build:
+      context: ../../../
+      dockerfile: ./eyesonly/tests/integration/Dockerfile
+    command: python3 /eyesonly/eyesonly/tests/integration/integration_test.py
+    environment:
+      - SECRET1=secret1
+      - SECRET2=secret2
+    restart: on-failure
