@@ -1,0 +1,28 @@
+{
+  "eyesonly": {
+    "secrets": [
+      {
+        "secret": "secret1",
+        "files": [
+          {
+            "file_path": "./integration_test.py",
+            "functions": [
+              "test_access_allowed_to_secret1"
+            ]
+          }
+        ]
+      },
+      {
+        "secret": "secret2",
+        "files": [
+          {
+            "file_path": "./integration_test.py",
+            "functions": [
+              "test_access_allowed_to_secret2"
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
