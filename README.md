@@ -9,9 +9,9 @@
 
 A package to avoid having leaks of secrets.
 
-A proof-of concept of a way of hiding secrets by limiting the places they can be called.
+A way of hiding secrets by limiting the places they can be called.
 
-IMPORTANT NOTICE: **This code is in pre-alpha stage. I am not responsible for any damage you suffer because of your use of this project.**
+IMPORTANT NOTICE: **This code is in alpha stage. Use at your own risk.**
 
 ## Use
 
@@ -28,27 +28,30 @@ There are two types of configuration files that you can create: JSON and toml.
   "eyesonly":{
     "secrets": [
       {
-        "secret": "secret1",
+        "secret": "geo_api_key",
         "files": [
           {
-            "file_path": "../../path/to/secret11.py",
+            "file_path": "../../secrets_use.py",
             "functions": [
-              "func1b",
-              "func1a"
+              "allowed_use1",
+              "allowed_use2",
+              "allowed_use3"
             ]
           },
           {
-            "file_path": "../../path/to/secret12.py",
-            "functions": ["func2b", "func2a"]
+            "file_path": "../../another_secrets_use.py",
+            "functions": [
+              "anther_allowed_use1"
+            ]
           }
         ]
       },
       {
-        "secret": "secret2",
+        "secret": "postgresql_password",
         "files": [
           {
-            "file_path": "/root/path/to/secret2.py",
-            "functions": ["func4", "func3"]
+            "file_path": "../../secrets_use.py",
+            "functions": ["allowed_use1"]
           }
         ]
       }
@@ -109,8 +112,8 @@ could read be used to declare your secrets (usually by reading their value from 
 import os
 from eyesonly.secret import Secret
 
-GEO_API_SECRET = Secret(name='api_key', value=os.environ['GEO_SERVICE_API_KEY'], acl=json_acl)
-DB_PASSWORD = Secret(name='postgresql_password', value=os.environ['DB_PASSWORD'], acl=json_acl)
+GEO_API_SECRET = Secret(name='geo_api_key', value=os.environ['GEO_SERVICE_API_KEY'], acl=json_acl)
+DB_PASSWORD = Secret(name='postgresql_password', value=os.environ['DB_PASSWORD'], acl=json_acl, denied_policy='censure')
 ```
 
 Each Secret needs its own ACL, so you will have to pass it as parameter, as seen above in the
@@ -118,23 +121,37 @@ examples.
 
 ### Use your secrets in your code
 ```python
-from .secret_depository import GEO_API_SECRET
+# secrets_use.py
+import os
+from .secret_depository import GEO_API_SECRET, DB_PASSWORD
 from eyesonly.secret import Secret
 
 assert GEO_API_SECRET.__class__ == Secret
 
-def allowed_func1():
-    # Secret can be seen in this function 
-    value = str(GEO_API_SECRET)
-    assert 'SECRET_API_KEY' == value
+def allowed_use1():
+    # Both secrets can be seen in this function 
+    assert os.environ['GEO_SERVICE_API_KEY'] == str(GEO_API_SECRET)
+    assert os.environ['DB_PASSWORD'] == str(DB_PASSWORD)
 
 
-def allowed_func2():
-    # Secret can be seen in this function 
+def allowed_use2():
+    # geo_api_key can be seen in this function 
     return str(GEO_API_SECRET)
     
 
-def another_func():
-    # Secret can be seen in this function 
-    assert 'SECRET_API_KEY' == allowed_func2()
+def another_use3():
+    # geo_api_key can be seen in this function 
+    assert os.environ['GEO_SERVICE_API_KEY'] == allowed_use2()
+
+
+def geo_api_key_not_allowed():
+    # geo_api_key can NOT be seen in this function and will raise an exception
+    return str(GEO_API_SECRET)
+
+
+def postgresql_password_not_allowed():
+    # postgresql_password can NOT be seen in this function but will return
+    # a string with only asterisks because of the "denied_policy" parameter
+    # in the Secret initializer.
+    assert '*****' == str(DB_PASSWORD)
 ```
