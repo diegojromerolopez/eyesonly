@@ -16,18 +16,12 @@ class BaseFileACLProvider(BaseACLProvider):
     def _load(self, acl_config_file: BinaryIO):
         raise NotImplementedError
 
+    def _absolutize_file_path(self, file_path: str) -> str:
+        return os.path.realpath(
+            os.path.join(self._config_dir_path, file_path)
+        )
+
     def load(self) -> ACLType:
         with open(self._config_file_path, 'rb') as acl_file:
-            acl_config = self._load(acl_file)
-
-        acl = {}
-        for secret_attrs in acl_config.get('eyesonly', {}).get('secrets', {}):
-            secret: str = secret_attrs['secret']
-            acl[secret] = {}
-            for file_attrs in secret_attrs['files']:
-                file_path: str = os.path.realpath(
-                    os.path.join(self._config_dir_path, file_attrs['file_path'])
-                )
-                functions: List[str] = file_attrs['functions']
-                acl[secret][file_path] = set(functions)
-        return acl
+            input_config = self._load(acl_file)
+        return self._input_acl_to_acl(input_acl=input_config)

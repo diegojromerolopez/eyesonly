@@ -13,14 +13,5 @@ class EnvACLProvider(BaseACLProvider):
             raise ValueError(f'Environment variable {self.__env_variable} not found')
 
     def load(self) -> ACLType:
-        acl_config = json.loads(os.environ[self.__env_variable])
-
-        acl = {}
-        for secret_attrs in acl_config.get('eyesonly', {}).get('secrets', {}):
-            secret: str = secret_attrs['secret']
-            acl[secret] = {}
-            for file_attrs in secret_attrs['files']:
-                file_path: str = file_attrs['file_path']
-                functions: List[str] = file_attrs['functions']
-                acl[secret][file_path] = set(functions)
-        return acl
+        input_acl = json.loads(os.environ[self.__env_variable])
+        return self._input_acl_to_acl(input_acl=input_acl)
