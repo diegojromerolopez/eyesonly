@@ -28,7 +28,7 @@ IMPORTANT NOTICE: **This code is in alpha stage. Use at your own risk.**
 You have to create a configuration file that specifies which secrets can be accessed from which files
 and functions. This is what we call access-control-list (or ACL for short).
 
-There are two types of configuration files that you can create: JSON and toml.
+There are three types of configuration files that you can create: JSON in file, JSON in environment variable, and toml.
 
 #### JSON configuration file
 ```json
@@ -68,6 +68,10 @@ There are two types of configuration files that you can create: JSON and toml.
 }
 ```
 
+#### JSON in environment variable
+Assign an environment variable with the contents of a JSON equal to the previous "JSON configuration file" section.
+Note the file paths must be absolute as there is no directory to set as root.
+
 #### Toml configuration file
 ```toml
 [eyesonly]
@@ -101,10 +105,14 @@ functions =[
 from eyesonly.secret import Secret
 from eyesonly.acl.acl import ACL
 from eyesonly.acl.providers.json_acl_provider import JSONACLProvider
+from eyesonly.acl.providers.env_acl_provider import EnvACLProvider
 from eyesonly.acl.providers.toml_acl_provider import TomlACLProvider
 
 # JSON configuration file
 json_acl = ACL(JSONACLProvider(file_path='path/of/your/json/config/file'))
+
+# JSON in environment variable
+env_acl = ACL(EnvACLProvider(env_variable='variable'))
 
 # toml configuration file
 toml_acl = ACL(TomlACLProvider(file_path='path/of/your/toml/config/file'))
@@ -163,3 +171,7 @@ def postgresql_password_not_allowed():
     # in the Secret initializer.
     assert '*****' == str(DB_PASSWORD)
 ```
+
+## License
+
+[MIT](LICENSE), readme image is authored by me, and it is placed in the public domain.

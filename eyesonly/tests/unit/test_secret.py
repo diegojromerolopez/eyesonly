@@ -1,8 +1,10 @@
+import json
 import os
 import time
 import unittest
 
 from eyesonly.acl.acl import ACL
+from eyesonly.acl.providers.env_acl_provider import EnvACLProvider
 from eyesonly.acl.providers.json_acl_provider import JSONACLProvider
 from eyesonly.acl.providers.toml_acl_provider import TomlACLProvider
 from eyesonly.exceptions import EyesOnlyException
@@ -17,7 +19,24 @@ class TestSecret(unittest.TestCase):
         json_config_file_path = os.path.join(resources_path, 'eyesonly.json')
         toml_config_file_path = os.path.join(resources_path, 'eyesonly.toml')
 
+        os.environ['test_acl'] = json.dumps({
+            "eyesonly": {
+                "secrets": [
+                    {
+                        "secret": "env_secret1",
+                        "files": [
+                            {
+                                "file_path": os.path.join(root_path, 'test_secret.py'),
+                                "functions": ["test_env_config_secret_allowed"]
+                            }
+                        ]
+                    }
+                ]
+            }
+        })
+
         self.json_acl = ACL(JSONACLProvider(file_path=json_config_file_path))
+        self.env_acl = ACL(EnvACLProvider(env_variable='test_acl'))
         self.toml_acl = ACL(TomlACLProvider(file_path=toml_config_file_path))
 
     def test_missing_secret(self):
@@ -86,3 +105,17 @@ class TestSecret(unittest.TestCase):
         value = str(secret)
 
         self.assertEqual('SECRET_API_KEY', value)
+
+    def test_env_config_secret_not_allowed(self):
+        secret = Secret(name='env_secret1', value='ENV_SECRET1', acl=self.env_acl)
+        with self.assertRaises(EyesOnlyException) as exc_context:
+            str(secret)
+
+        self.assertEqual('Secret env_secret1 is not allowed to be seen here',
+                         str(exc_context.exception))
+
+    def test_env_config_secret_allowed(self):
+        secret = Secret(name='env_secret1', acl=self.env_acl, value='ENV_SECRET1')
+        value = str(secret)
+
+        self.assertEqual('ENV_SECRET1', value)
