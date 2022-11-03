@@ -23,27 +23,11 @@ class TestSecret(unittest.TestCase):
             "eyesonly": {
                 "secrets": [
                     {
-                        "secret": "secret1",
+                        "secret": "env_secret1",
                         "files": [
                             {
-                                "file_path": "../../path/to/secret11.py",
-                                "functions": [
-                                    "func1b",
-                                    "func1a"
-                                ]
-                            },
-                            {
-                                "file_path": "../../path/to/secret12.py",
-                                "functions": ["func2b", "func2a"]
-                            }
-                        ]
-                    },
-                    {
-                        "secret": "secret2",
-                        "files": [
-                            {
-                                "file_path": "/root/path/to/secret2.py",
-                                "functions": ["func4", "func3"]
+                                "file_path": os.path.join(root_path, 'test_secret.py'),
+                                "functions": ["test_env_config_secret_allowed"]
                             }
                         ]
                     }
@@ -121,3 +105,17 @@ class TestSecret(unittest.TestCase):
         value = str(secret)
 
         self.assertEqual('SECRET_API_KEY', value)
+
+    def test_env_config_secret_not_allowed(self):
+        secret = Secret(name='env_secret1', value='ENV_SECRET1', acl=self.env_acl)
+        with self.assertRaises(EyesOnlyException) as exc_context:
+            str(secret)
+
+        self.assertEqual('Secret env_secret1 is not allowed to be seen here',
+                         str(exc_context.exception))
+
+    def test_env_config_secret_allowed(self):
+        secret = Secret(name='env_secret1', acl=self.env_acl, value='ENV_SECRET1')
+        value = str(secret)
+
+        self.assertEqual('ENV_SECRET1', value)
