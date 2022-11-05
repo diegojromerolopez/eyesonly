@@ -1,5 +1,5 @@
 import os
-from typing import BinaryIO, List
+from typing import BinaryIO
 
 from eyesonly.acl.acl_type import ACLType
 from eyesonly.acl.providers.base_acl_provider import BaseACLProvider

@@ -1,4 +1,4 @@
-from typing import List, Dict
+from typing import List
 
 from eyesonly.acl.acl_type import ACLType, InputACLType
 

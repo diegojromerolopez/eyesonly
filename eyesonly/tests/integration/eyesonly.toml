@@ -1,0 +1,15 @@
+[eyesonly]
+[[eyesonly.secrets]]
+secret = 'secret1'
+[[eyesonly.secrets.files]]
+file_path = './integration_test.py'
+functions = [
+    'test_access_allowed_to_secret1'
+]
+[[eyesonly.secrets]]
+secret = 'secret2'
+[[eyesonly.secrets.files]]
+file_path = './integration_test.py'
+functions =[
+    "test_access_allowed_to_secret2"
+]

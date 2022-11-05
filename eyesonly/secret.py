@@ -1,5 +1,5 @@
 import inspect
-from typing import Callable, Optional
+from typing import Callable
 
 from eyesonly.acl.acl import ACL
 from eyesonly.exceptions import EyesOnlyException
@@ -40,4 +40,3 @@ class Secret:
 
     def __denied_policy_censure(self):
         return self.CENSORED_VALUE_REPLACEMENT
-
