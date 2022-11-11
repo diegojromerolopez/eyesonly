@@ -3,22 +3,28 @@
 secret = 'secret1'
 [[eyesonly.secrets.files]]
 file_path = '../../path/to/secret11.py'
-functions = [
-    'func1a',
-    'func1b'
-]
+[[eyesonly.secrets.files.functions]]
+name = 'func1a'
+inheritance = true
+[[eyesonly.secrets.files.functions]]
+name = 'func1b'
+inheritance = true
 [[eyesonly.secrets.files]]
 file_path = '../../path/to/secret12.py'
-functions = [
-    'func2a',
-    'func2b'
-]
+[[eyesonly.secrets.files.functions]]
+name = 'func2a'
+inheritance = true
+[[eyesonly.secrets.files.functions]]
+name = 'func2b'
+inheritance = true
 
 [[eyesonly.secrets]]
 secret = 'secret2'
 [[eyesonly.secrets.files]]
 file_path = '/root/path/to/secret2.py'
-functions =[
-    'func3',
-    'func4'
-]
+[[eyesonly.secrets.files.functions]]
+name = 'func3'
+inheritance = true
+[[eyesonly.secrets.files.functions]]
+name = 'func4'
+inheritance = true

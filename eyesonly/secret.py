@@ -14,21 +14,17 @@ class Secret:
         self.__acl = acl
         self.__denied_policy: Callable = self.__build_denied_policy(policy=denied_policy)
 
-    def __allowed(self, file_path: str, function: str) -> bool:
-        return self.__acl.allowed(secret=self.__name, file_path=file_path, function=function)
+    def __allowed(self, file_path: str, function: str, function_layer: int) -> bool:
+        return self.__acl.allowed(secret=self.__name, file_path=file_path, function=function,
+                                  function_layer=function_layer)
 
     def __str__(self):
         curr_frame = inspect.currentframe()
         finfos = inspect.getouterframes(curr_frame)
-        for frame_info in finfos[1:]:
-            if self.__allowed(function=frame_info.function, file_path=frame_info.filename):
+        for function_layer, frame_info in enumerate(finfos[1:], start=1):
+            if self.__allowed(function=frame_info.function, file_path=frame_info.filename,
+                              function_layer=function_layer):
                 return self.__value
-
-        return self.__denied_policy()
-
-    def str(self, file_path: str, function: str):
-        if self.__allowed(function=function, file_path=file_path):
-            return self.__value
 
         return self.__denied_policy()
 

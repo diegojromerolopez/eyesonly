@@ -14,4 +14,5 @@ class TomlACLProvider(BaseFileACLProvider):
         super().__init__(file_path=file_path)
 
     def _load(self, acl_config_file: BinaryIO) -> ACLType:
-        return tomllib.load(acl_config_file)
+        acl = tomllib.load(acl_config_file)
+        return acl

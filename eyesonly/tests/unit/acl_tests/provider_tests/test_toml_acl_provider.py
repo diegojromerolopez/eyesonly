@@ -19,11 +19,20 @@ class TestTomlACLProvider(unittest.TestCase):
     def test_load(self):
         expected_acl = {
             'secret1': {
-                os.path.realpath(os.path.join(self.resources_path, '../../path/to/secret11.py')): {'func1b', 'func1a'},
-                os.path.realpath(os.path.join(self.resources_path, '../../path/to/secret12.py')): {'func2b', 'func2a'}
+                os.path.realpath(os.path.join(self.resources_path, '../../path/to/secret11.py')): {
+                    'func1b': {"inheritance": True},
+                    'func1a': {"inheritance": True}
+                },
+                os.path.realpath(os.path.join(self.resources_path, '../../path/to/secret12.py')): {
+                    'func2b': {"inheritance": True},
+                    'func2a': {"inheritance": True}
+                }
             },
             'secret2': {
-                '/root/path/to/secret2.py': {'func4', 'func3'}
+                '/root/path/to/secret2.py': {
+                    'func4': {"inheritance": True},
+                    'func3': {"inheritance": True}
+                }
             }
         }
 

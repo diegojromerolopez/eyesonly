@@ -26,7 +26,12 @@ class TestSecret(unittest.TestCase):
                         "files": [
                             {
                                 "file_path": os.path.join(root_path, 'test_secret.py'),
-                                "functions": ["test_env_config_secret_allowed"]
+                                "functions": [
+                                    {
+                                        "name": "test_env_config_secret_allowed",
+                                        "inheritance": True
+                                    }
+                                ]
                             }
                         ]
                     }
@@ -90,6 +95,21 @@ class TestSecret(unittest.TestCase):
             return str(secret)
 
         self.assertEqual('SECRET_API_KEY', inner_function_in_test())
+
+    def test_json_config_not_allowed_in_inner_function(self):
+        secret = Secret(name='secret_allowed', acl=self.json_acl, value='SECRET_API_KEY')
+
+        def inner_function_without_inheritance():
+            secret_is_not_allowed_here = Secret(name='secret_allowed', acl=self.json_acl,
+                                                value='SECRET_API_KEY')
+            return str(secret_is_not_allowed_here)
+
+        with self.assertRaises(EyesOnlyException) as exc_context:
+            inner_function_without_inheritance()
+
+        self.assertEqual('SECRET_API_KEY', str(secret))
+        self.assertEqual('Secret secret_allowed is not allowed to be seen here',
+                         str(exc_context.exception))
 
     def test_toml_config_secret_not_allowed(self):
         secret = Secret(name='secret_not_allowed_anywhere', value='SECRET_API_KEY', acl=self.toml_acl)
