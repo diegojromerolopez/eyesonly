@@ -7,7 +7,9 @@
           {
             "file_path": "./integration_test.py",
             "functions": [
-              "test_access_allowed_to_secret1"
+              {
+                "name": "test_access_allowed_to_secret1"
+              }
             ]
           }
         ]
@@ -18,7 +20,9 @@
           {
             "file_path": "./integration_test.py",
             "functions": [
-              "test_access_allowed_to_secret2"
+              {
+                "name": "test_access_allowed_to_secret2"
+              },
             ]
           }
         ]

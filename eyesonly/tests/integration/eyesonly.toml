@@ -3,13 +3,13 @@
 secret = 'secret1'
 [[eyesonly.secrets.files]]
 file_path = './integration_test.py'
-functions = [
-    'test_access_allowed_to_secret1'
-]
+[[eyesonly.secrets.files.functions]]
+name = 'test_access_allowed_to_secret1'
+inheritance = true
 [[eyesonly.secrets]]
 secret = 'secret2'
 [[eyesonly.secrets.files]]
 file_path = './integration_test.py'
-functions =[
-    "test_access_allowed_to_secret2"
-]
+[[eyesonly.secrets.files.functions]]
+name = 'test_access_allowed_to_secret2'
+inheritance = true
