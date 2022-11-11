@@ -22,7 +22,7 @@
             "functions": [
               {
                 "name": "test_access_allowed_to_secret2"
-              },
+              }
             ]
           }
         ]
