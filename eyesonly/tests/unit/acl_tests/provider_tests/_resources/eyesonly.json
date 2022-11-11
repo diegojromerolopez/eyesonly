@@ -7,13 +7,28 @@
           {
             "file_path": "../../path/to/secret11.py",
             "functions": [
-              "func1b",
-              "func1a"
+              {
+                "name": "func1a",
+                "inheritance": true
+              },
+              {
+                "name": "func1b",
+                "inheritance": true
+              }
             ]
           },
           {
             "file_path": "../../path/to/secret12.py",
-            "functions": ["func2b", "func2a"]
+            "functions": [
+              {
+                "name": "func2a",
+                "inheritance": true
+              },
+              {
+                "name": "func2b",
+                "inheritance": true
+              }
+            ]
           }
         ]
       },
@@ -22,7 +37,16 @@
         "files": [
           {
             "file_path": "/root/path/to/secret2.py",
-            "functions": ["func4", "func3"]
+            "functions": [
+              {
+                "name": "func3",
+                "inheritance": true
+              },
+              {
+                "name": "func4",
+                "inheritance": true
+              }
+            ]
           }
         ]
       }

@@ -28,6 +28,11 @@ IMPORTANT NOTICE: **This code is in alpha stage. Use at your own risk.**
 You have to create a configuration file that specifies which secrets can be accessed from which files
 and functions. This is what we call access-control-list (or ACL for short).
 
+The configuration file must determine the file, functions and if there is inheritance of permission grant
+from the called functions if one ancestor is allowed to see the secret. By default, the inheritance is
+activated (you do not have to include `"inheritance": true`, only set to false in case you do not want
+inheritance).
+
 There are three types of configuration files that you can create: JSON in file, JSON in environment variable, and toml.
 
 #### JSON configuration file
@@ -41,15 +46,27 @@ There are three types of configuration files that you can create: JSON in file, 
           {
             "file_path": "../../secrets_use.py",
             "functions": [
-              "allowed_use1",
-              "allowed_use2",
-              "allowed_use3"
+              {
+                "name": "allowed_use1",
+                "inheritance": true
+              },
+              {
+                "name": "allowed_use2",
+                "inheritance": true
+              },
+              {
+                "name": "allowed_use3",
+                "inheritance": true
+              }
             ]
           },
           {
             "file_path": "../../another_secrets_use.py",
             "functions": [
-              "anther_allowed_use1"
+              {
+                "name": "another_allowed_use1_for_it_and_all_inner_function_calls",
+                "inheritance": true
+              }
             ]
           }
         ]
@@ -59,7 +76,12 @@ There are three types of configuration files that you can create: JSON in file, 
         "files": [
           {
             "file_path": "../../secrets_use.py",
-            "functions": ["allowed_use1"]
+            "functions": [
+              {
+                "name": "allowed_use1",
+                "inheritance": false
+              }
+            ]
           }
         ]
       }
@@ -79,25 +101,31 @@ Note the file paths must be absolute as there is no directory to set as root.
 secret = 'secret1'
 [[eyesonly.secrets.files]]
 file_path = '../../path/to/secret11.py'
-functions = [
-    'func1a',
-    'func1b'
-]
+[[eyesonly.secrets.files.functions]]
+name = 'func1a'
+inheritance = true
+[[eyesonly.secrets.files.functions]]
+name = 'func1b'
+inheritance = true
 [[eyesonly.secrets.files]]
 file_path = '../../path/to/secret12.py'
-functions = [
-    'func2a',
-    'func2b'
-]
+[[eyesonly.secrets.files.functions]]
+name = 'func2a'
+inheritance = true
+[[eyesonly.secrets.files.functions]]
+name = 'func2b'
+inheritance = true
 
 [[eyesonly.secrets]]
 secret = 'secret2'
 [[eyesonly.secrets.files]]
 file_path = '/root/path/to/secret2.py'
-functions =[
-    'func3',
-    'func4'
-]
+[[eyesonly.secrets.files.functions]]
+name = 'func3'
+inheritance = true
+[[eyesonly.secrets.files.functions]]
+name = 'func4'
+inheritance = true
 ```
 
 ### Load your configuration file and assign the ACL to your secrets

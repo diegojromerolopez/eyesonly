@@ -18,11 +18,21 @@ class TestEnvACLProvider(unittest.TestCase):
     def test_load(self):
         expected_acl = {
             'secret1': {
-                '/$HOME/path/to/secret11.py': {'func1b', 'func1a'},
-                '/$HOME/path/to/secret12.py': {'func2b', 'func2a'}
+                '/$HOME/path/to/secret11.py': {
+                    'func1a': {"inheritance": True},
+                    'func1b': {"inheritance": True}
+                },
+                '/$HOME/path/to/secret12.py': {
+                    'func2a': {"inheritance": True},
+                    'func2b': {"inheritance": True},
+                    'func2c': {"inheritance": False}
+                }
             },
             'secret2': {
-                '/root/path/to/secret2.py': {'func4', 'func3'}
+                '/root/path/to/secret2.py': {
+                    'func3a': {"inheritance": True},
+                    'func4': {"inheritance": True}
+                }
             }
         }
 
@@ -35,13 +45,30 @@ class TestEnvACLProvider(unittest.TestCase):
                             {
                                 "file_path": "/$HOME/path/to/secret11.py",
                                 "functions": [
-                                    "func1b",
-                                    "func1a"
+                                    {
+                                        "name": "func1a"
+                                    },
+                                    {
+                                        "name": "func1b",
+                                        "inheritance": True
+                                    }
                                 ]
                             },
                             {
                                 "file_path": "/$HOME/path/to/secret12.py",
-                                "functions": ["func2b", "func2a"]
+                                "functions": [
+                                    {
+                                        "name": "func2a"
+                                    },
+                                    {
+                                        "name": "func2b",
+                                        "inheritance": True
+                                    },
+                                    {
+                                        "name": "func2c",
+                                        "inheritance": False
+                                    }
+                                ]
                             }
                         ]
                     },
@@ -50,7 +77,15 @@ class TestEnvACLProvider(unittest.TestCase):
                         "files": [
                             {
                                 "file_path": "/root/path/to/secret2.py",
-                                "functions": ["func4", "func3"]
+                                "functions": [
+                                    {
+                                        "name": "func4"
+                                    },
+                                    {
+                                        "name": "func3a",
+                                        "inheritance": True
+                                    }
+                                ]
                             }
                         ]
                     }

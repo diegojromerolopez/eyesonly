@@ -3,13 +3,13 @@
 secret = 'secret_not_allowed_anywhere'
 [[eyesonly.secrets.files]]
 file_path = '../test_secret.py'
-functions = [
-    'this_function_does_not_exist'
-]
+[[eyesonly.secrets.files.functions]]
+name = 'this_function_does_not_exist'
+inheritance = true
 [[eyesonly.secrets]]
 secret = 'secret_allowed'
 [[eyesonly.secrets.files]]
 file_path = '../test_secret.py'
-functions =[
-    "test_toml_config_secret_allowed"
-]
+[[eyesonly.secrets.files.functions]]
+name = 'test_toml_config_secret_allowed'
+inheritance = true

@@ -7,7 +7,10 @@
           {
             "file_path": "../test_secret.py",
             "functions": [
-              "this_function_does_not_exist"
+              {
+                "name": "this_function_does_not_exist",
+                "inheritance": false
+              }
             ]
           }
         ]
@@ -18,11 +21,30 @@
           {
             "file_path": "../test_secret.py",
             "functions": [
-              "test_json_config_secret_allowed",
-              "test_json_config_allowed_in_inner_function_with_allowed_caller_function",
-              "inner_function",
-              "inner_function_in_test",
-              "test_secret_performance"
+              {
+                "name": "test_json_config_secret_allowed",
+                "inheritance": false
+              },
+              {
+                "name": "test_json_config_allowed_in_inner_function_with_allowed_caller_function",
+                "inheritance": true
+              },
+              {
+                "name": "inner_function",
+                "inheritance": true
+              },
+              {
+                "name": "inner_function_in_test",
+                "inheritance": true
+              },
+              {
+                "name": "inner_function_in_test",
+                "inheritance": true
+              },
+              {
+                "name": "test_json_config_not_allowed_in_inner_function",
+                "inheritance": false
+              }
             ]
           }
         ]
