@@ -31,7 +31,8 @@ class TestJSONACLProvider(unittest.TestCase):
             'secret2': {
                 '/root/path/to/secret2.py': {
                     'func4': {"inheritance": True},
-                    'func3': {"inheritance": True}
+                    'func3': {"inheritance": True},
+                    'func5': {"inheritance": True}
                 }
             }
         }

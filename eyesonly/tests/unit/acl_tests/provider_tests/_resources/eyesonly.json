@@ -45,7 +45,8 @@
               {
                 "name": "func4",
                 "inheritance": true
-              }
+              },
+              "func5"
             ]
           }
         ]

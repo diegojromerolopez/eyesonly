@@ -20,10 +20,15 @@ class BaseACLProvider:
 
                 function_attrs_list: List[Dict[str, str]] = file_attrs['functions']
                 for function_attrs in function_attrs_list:
-                    function_name = function_attrs['name']
-                    acl[secret][file_path][function_name] = {
-                        'inheritance': function_attrs.get('inheritance', self.INHERITANCE_BY_DEFAULT)
-                    }
+                    if isinstance(function_attrs, str):
+                        acl[secret][file_path][function_attrs] = {
+                            'inheritance': self.INHERITANCE_BY_DEFAULT
+                        }
+                    elif isinstance(function_attrs, dict):
+                        function_name = function_attrs['name']
+                        acl[secret][file_path][function_name] = {
+                            'inheritance': function_attrs.get('inheritance', self.INHERITANCE_BY_DEFAULT)
+                        }
         return acl
 
     def load(self) -> ACLType:
