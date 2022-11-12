@@ -7,7 +7,7 @@ long_description = open(os.path.join(root_dir_path, 'README.md')).read()
 
 setup(
     name='eyesonly',
-    version='1.0.0',
+    version='1.0.1',
     author='Diego J. Romero López',
     author_email='diegojromerolopez@gmail.com',
     description='A package to avoid having leaks of secrets',
